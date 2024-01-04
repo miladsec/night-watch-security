@@ -16,7 +16,7 @@ import pandas as pd
 from src.crons.utf8_fix import cleanup_files_in_directory
 from src.helpers.base import get_today_string
 
-DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, os.pardir, 'data')
+DATA_FOLDER = os.path.join(os.getcwd(), 'data')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ def process_data_and_store(folder_name=None):
     return grouped_df
 
 
-if __name__ == '__main__':
+def run_daily_job():
     start_time = time.time()
 
     try:
@@ -122,3 +122,7 @@ if __name__ == '__main__':
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info(f"Execution Time: {execution_time} seconds")
+
+
+if __name__ == '__main__':
+    run_daily_job()
