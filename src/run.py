@@ -35,8 +35,7 @@ def main():
         start_time = time.time()
         results = asyncio.run(http_live_status(PD_DATA_FRAME))
         end_time = time.time()
-        vaa = end_time - start_time
-        v2 = 1
+        print(f"Done in {end_time - start_time}")
 
     if args.dailyjob:
         run_daily_job()
