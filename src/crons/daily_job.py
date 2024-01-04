@@ -14,6 +14,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 
+from src.crons.utf8_fix import cleanup_files_in_directory
+
 DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, os.pardir, 'data')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -74,7 +76,7 @@ def extract_chaos_zip_file():
         zip_ref.extractall(extract_to_directory)
 
 
-def pre_data_cleaning(file_path):
+def read_utf8_lines(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.read().splitlines()
@@ -97,7 +99,7 @@ def process_data_and_store(folder_name=None):
         file_paths = [os.path.join(subdir, file) for subdir, _, files in os.walk(root_directory) for file in files]
 
         # Use executor.map to process files in parallel
-        data_list = list(executor.map(pre_data_cleaning, file_paths))
+        data_list = list(executor.map(read_utf8_lines, file_paths))
 
     # Concatenate DataFrames
     df = pd.concat([pd.DataFrame(data) for data in data_list], ignore_index=True)
@@ -116,6 +118,7 @@ if __name__ == '__main__':
     start_time = time.time()
 
     try:
+        cleanup_files_in_directory(os.path.join(DATA_FOLDER, get_today_string()), get_today_string())
         download_chaos_zip_file()
         extract_chaos_zip_file()
         grouped_df = process_data_and_store(folder_name='1')
