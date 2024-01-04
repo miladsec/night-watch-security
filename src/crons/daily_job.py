@@ -22,8 +22,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-
-
 def download_chaos_zip_file():
     if os.path.exists(os.path.join(DATA_FOLDER, f'chaos-all-{get_today_string()}.zip')):
         return
