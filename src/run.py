@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import os
+import time
 
 import pandas as pd
 
@@ -31,7 +32,11 @@ def main():
 
     if args.httplive:
         print("looking for live http")
+        start_time = time.time()
         results = asyncio.run(http_live_status(PD_DATA_FRAME))
+        end_time = time.time()
+        vaa = end_time - start_time
+        v2 = 1
 
     if args.dailyjob:
         run_daily_job()

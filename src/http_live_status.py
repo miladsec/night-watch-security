@@ -1,8 +1,12 @@
+import logging
 import os
 import asyncio
 import httpx
 
 DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, 'data')
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 async def check_url_status(url):
@@ -20,18 +24,29 @@ async def check_url_status(url):
 async def check_all_urls(urls):
     tasks = [check_url_status(url) for url in urls]
     results = await asyncio.gather(*tasks)
+    logger.info(f"Process for {urls} (live checking) ended.")
     return results
 
 
 async def process_row(row):
     urls = eval(row["Data"])  # Convert string representation of list to actual list
+    logger.info(f"Process for {urls} started.")
     results = await check_all_urls(urls)
     return results
 
 
 async def http_live_status(df):
+    logger.info(f"Http live status checker started.")
     df["Status"] = await asyncio.gather(*[process_row(row) for _, row in df.iterrows()])
+    logger.info(f"Http live status checker Done.")
+
+    logger.info(f"Http live status (FLAG) checker started.")
     df["AnyURLLive"] = df["Status"].apply(lambda x: any(x))
+    logger.info(f"Http live status (FLAG) checker ended.")
+
+    logger.info(f"Http live url lists started.")
     df["LiveURLs"] = df.apply(lambda row: [url for url, status in zip(eval(row["Data"]), row["Status"]) if status],
                               axis=1)
+    logger.info(f"Http live url lists ended.")
+
     return df
