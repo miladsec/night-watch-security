@@ -10,7 +10,7 @@ def get_today_string():
 
 
 def read_yaml_config():
-    base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, 'config', 'base.yml')
+    base_path = os.path.join(os.getcwd(), 'src', 'config', 'base.yml')
     print(base_path)
     with open(base_path, 'r') as file:
         config = yaml.safe_load(file)
