@@ -1,8 +1,10 @@
 import argparse
 
+from src.helpers.base import read_yaml_config
+
 
 def add_args(parser):
-    parser.add_argument('--version', required=False, help='Show the current version')
+    parser.add_argument('--version', action='store_true', help='Show the current version')
 
 
 def main():
@@ -10,9 +12,10 @@ def main():
     add_args(parser)
     args = parser.parse_args()
 
+    base_configs = read_yaml_config()
+
     if args.version:
-        # call_method(args.version)
-        return
+        print(f"you are using {base_configs.get('nws', {}).get('version')} version.")
 
 
 if __name__ == '__main__':
