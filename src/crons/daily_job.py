@@ -2,7 +2,6 @@ import logging
 import os
 import time
 import zipfile
-from datetime import datetime
 
 from selenium import webdriver
 from selenium.common import TimeoutException
@@ -15,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 
 from src.crons.utf8_fix import cleanup_files_in_directory
+from src.helpers.base import get_today_string
 
 DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, os.pardir, 'data')
 
@@ -22,10 +22,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-def get_today_string():
-    now = datetime.now()
-    current_date = f"{now.day}-{now.month}-{now.year}"
-    return current_date
 
 
 def download_chaos_zip_file():
