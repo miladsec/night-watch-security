@@ -115,7 +115,7 @@ if __name__ == '__main__':
         cleanup_files_in_directory(os.path.join(DATA_FOLDER, get_today_string()), get_today_string())
         download_chaos_zip_file()
         extract_chaos_zip_file()
-        grouped_df = process_data_and_store(folder_name='1')
+        grouped_df = process_data_and_store(folder_name=get_today_string())
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
     finally:
