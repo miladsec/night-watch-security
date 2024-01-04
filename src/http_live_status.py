@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 async def check_url_status(url):
+    logger.info(f"checking {url}")
     async with httpx.AsyncClient() as client:
         try:
             response_http = await client.head('http://' + url)
@@ -24,20 +25,20 @@ async def check_url_status(url):
 async def check_all_urls(urls):
     tasks = [check_url_status(url) for url in urls]
     results = await asyncio.gather(*tasks)
-    logger.info(f"Process for {urls} (live checking) ended.")
     return results
 
 
-async def process_row(row):
-    urls = eval(row["Data"])  # Convert string representation of list to actual list
-    logger.info(f"Process for {urls} started.")
+async def process_row(id, row):
+    logger.info(f"Process for {id} started.")
+    urls = eval(row["Data"])
     results = await check_all_urls(urls)
+    logger.info(f"Process for urls {id} done.")
     return results
 
 
 async def http_live_status(df):
     logger.info(f"Http live status checker started.")
-    df["Status"] = await asyncio.gather(*[process_row(row) for _, row in df.iterrows()])
+    df["Status"] = await asyncio.gather(*[process_row(id, row) for id, row in df.iterrows()])
     logger.info(f"Http live status checker Done.")
 
     logger.info(f"Http live status (FLAG) checker started.")

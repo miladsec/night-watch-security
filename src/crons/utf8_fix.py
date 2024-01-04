@@ -22,7 +22,7 @@ def remove_non_utf8_lines(file_path):
 
 
 def cleanup_files_in_directory(tag=None):
-    if os.path.exists(f'{os.path.join(DATA_FOLDER)}.cleaned'):
+    if os.path.exists(f'{os.path.join(DATA_FOLDER, tag)}.cleaned'):
         return
 
     for root, dirs, files in os.walk(os.path.join(DATA_FOLDER, tag)):
@@ -30,5 +30,5 @@ def cleanup_files_in_directory(tag=None):
             file_path = os.path.join(root, file)
             remove_non_utf8_lines(file_path)
 
-    with open(f'{os.path.join(DATA_FOLDER)}.cleaned', 'w'):
+    with open(f'{os.path.join(DATA_FOLDER, tag)}.cleaned', 'w'):
         pass
