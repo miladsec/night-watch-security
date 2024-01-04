@@ -7,7 +7,7 @@ import pandas as pd
 from src.helpers.base import read_yaml_config, get_today_string
 from src.http_live_status import http_live_status
 
-DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, 'data')
+DATA_FOLDER = os.path.join(os.getcwd(), 'data')
 PD_DATA_FRAME = pd.read_csv(os.path.join(DATA_FOLDER, f'{get_today_string()}.csv'))
 
 
@@ -29,6 +29,7 @@ def main():
     if args.httplive:
         print("looking for live http")
         results = asyncio.run(http_live_status(PD_DATA_FRAME))
+        a = 10
 
 
 if __name__ == '__main__':
