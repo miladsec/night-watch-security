@@ -112,7 +112,7 @@ def run_daily_job():
     start_time = time.time()
 
     try:
-        cleanup_files_in_directory(os.path.join(DATA_FOLDER, get_today_string()), get_today_string())
+        cleanup_files_in_directory(get_today_string())
         download_chaos_zip_file()
         extract_chaos_zip_file()
         grouped_df = process_data_and_store(folder_name=get_today_string())
