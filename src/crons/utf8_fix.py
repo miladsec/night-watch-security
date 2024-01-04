@@ -28,5 +28,5 @@ def cleanup_files_in_directory(directory=None, tag=None):
             file_path = os.path.join(root, file)
             remove_non_utf8_lines(file_path)
 
-    with open(f'{os.path.join(directory, os.pardir, tag)}.cleaned', 'w'):
+    with open(f'{os.path.join(directory, tag)}.cleaned', 'w'):
         pass
