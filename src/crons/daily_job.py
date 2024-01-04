@@ -112,9 +112,9 @@ def run_daily_job():
     start_time = time.time()
 
     try:
-        cleanup_files_in_directory(get_today_string())
         download_chaos_zip_file()
         extract_chaos_zip_file()
+        cleanup_files_in_directory(get_today_string())
         grouped_df = process_data_and_store(folder_name=get_today_string())
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
