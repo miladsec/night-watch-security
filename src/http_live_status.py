@@ -1,7 +1,9 @@
 import logging
 import os
 import asyncio
-import httpx
+import aiohttp
+from concurrent.futures import ThreadPoolExecutor
+import pandas as pd
 
 DATA_FOLDER = os.path.join(os.getcwd(), os.pardir, 'data')
 
@@ -9,36 +11,48 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-async def check_url_status(url):
-    logger.info(f"checking {url}")
-    async with httpx.AsyncClient() as client:
-        try:
-            response_http = await client.head('http://' + url)
-            response_https = await client.head('https://' + url)
-
-            return response_http.is_success or response_https.is_success
-        except Exception as e:
-            print(f"Error checking URL {url}: {e}")
-            return False
-
-
-async def check_all_urls(urls):
-    tasks = [check_url_status(url) for url in urls]
+async def check_url_status(session, urls):
+    logger.info(f"Checking {len(urls)} URLs")
+    tasks = [check_single_url_status(session, url) for url in urls]
     results = await asyncio.gather(*tasks)
     return results
 
 
-async def process_row(id, row):
+async def check_single_url_status(session, url):
+    try:
+        async with (session.head(f'http://{url}', timeout=0.1) as response_http,
+                    session.head(f'https://{url}', timeout=0.1) as response_https):
+            return response_http.status == 200 or response_https.status == 200
+    except Exception as e:
+        logger.error(f"Error checking URL {url}: {e}")
+        return False
+
+
+async def process_row(id, row, session, batch_size=1000):
     logger.info(f"Process for {id} started.")
     urls = eval(row["Data"])
-    results = await check_all_urls(urls)
+    batches = [urls[i:i + batch_size] for i in range(0, len(urls), batch_size)]
+    results = []
+
+    for batch in batches:
+        batch_results = await check_url_status(session, batch)
+        results.extend(batch_results)
+
     logger.info(f"Process for urls {id} done.")
     return results
 
 
-async def http_live_status(df):
+async def http_live_status(df, batch_size=1000):
     logger.info(f"Http live status checker started.")
-    df["Status"] = await asyncio.gather(*[process_row(id, row) for id, row in df.iterrows()])
+
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=100)) as session:
+        with ThreadPoolExecutor() as executor:
+            loop = asyncio.get_event_loop()
+            tasks = [loop.create_task(process_row(id, row, session, batch_size)) for id, row in df.iterrows()]
+            results = await asyncio.gather(*tasks)
+
+    df["Status"] = results
+
     logger.info(f"Http live status checker Done.")
 
     logger.info(f"Http live status (FLAG) checker started.")

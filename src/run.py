@@ -7,7 +7,7 @@ import time
 import pandas as pd
 
 from src.crons.daily_job import run_daily_job
-from src.helpers.base import read_yaml_config, get_today_string
+from src.helpers.helper import read_base_yaml, get_today_string
 from src.http_live_status import http_live_status
 
 DATA_FOLDER = os.path.join(os.getcwd(), 'data')
@@ -29,7 +29,7 @@ def main():
     add_args(parser)
     args = parser.parse_args()
 
-    base_configs = read_yaml_config()
+    base_configs = read_base_yaml()
 
     if args.version:
         print(f"you are using {base_configs.get('nws', {}).get('version')} version.")

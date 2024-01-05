@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 
 from src.crons.utf8_fix import cleanup_files_in_directory
-from src.helpers.base import get_today_string
+from src.helpers.helper import get_today_string
 
 DATA_FOLDER = os.path.join(os.getcwd(), 'data')
 

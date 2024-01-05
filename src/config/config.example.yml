@@ -1,0 +1,2 @@
+postgresql:
+  connection_string: postgresql://your_username:your_password@your_host/your_database
