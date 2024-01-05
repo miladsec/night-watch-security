@@ -17,9 +17,9 @@ class HttpLive:
 
     async def check_single_url_status(self, session, url):
         try:
-            async with (session.head(f'http://{url}', timeout=0.1) as response_http,
-                        session.head(f'https://{url}', timeout=0.1) as response_https):
-                return response_http.status == 200 or response_https.status == 200
+            async with (session.head(f'http://{url}', timeout=5) as response_http,
+                        session.head(f'https://{url}', timeout=5) as response_https):
+                return 200 <= response_http.status < 400 or 200 <= response_https.status < 400
         except Exception as e:
             self.logger.error(f"Error checking URL {url}: {e}")
             return False

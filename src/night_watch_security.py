@@ -35,7 +35,7 @@ class NightWatchSecurity:
             self.version()
         elif args.dailyjob:
             self.daily_job()
-        elif args.httplives:
+        elif args.livehttp:
             self.live_http()
         else:
             print("Invalid command")
