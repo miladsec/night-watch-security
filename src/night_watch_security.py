@@ -49,8 +49,22 @@ class NightWatchSecurity:
         daily_job.daily_job()
 
     def live_http(self):
+        # live_http = HttpLive(self.data_folder, self.logger)
+        # asyncio.run(live_http.live_http(self.pd_data_frame))
+        # TODO::Only check for performance (try to fix memory exception)
+        chunk_size = 5
+
         live_http = HttpLive(self.data_folder, self.logger)
-        asyncio.run(live_http.live_http(self.pd_data_frame))
+
+        chunks = pd.read_csv(os.path.join(self.data_folder, f'{get_today_string()}.csv'), chunksize=chunk_size)
+
+        final_result_df = pd.DataFrame()
+
+        for chunk in chunks:
+            result_df = asyncio.run(live_http.live_http(chunk))
+            final_result_df = pd.concat([final_result_df, result_df], ignore_index=True)
+
+        final_result_df.to_csv(os.path.join(self.data_folder, f'{get_today_string()}_live.csv'), index=False)
 
 
 if __name__ == '__main__':
