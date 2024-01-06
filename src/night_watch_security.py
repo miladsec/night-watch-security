@@ -26,7 +26,7 @@ class NightWatchSecurity:
                                  help='Daily data gathering and csv generator')
         self.parser.add_argument("-lh", "--livehttp", action="store_true", help="find lives http targets")
         self.parser.add_argument("-c", "--chunksize", type=int, default=1000,
-                            help="Specify the chunk size for processing the DataFrame")
+                                 help="Specify the chunk size for processing the DataFrame")
         self.base_configs = read_base_yaml()
 
         self.data_folder = os.path.join(os.getcwd(), 'data')
@@ -64,26 +64,26 @@ class NightWatchSecurity:
 
         chunks = pd.read_csv(os.path.join(self.data_folder, f'{get_today_string()}.csv'), chunksize=chunk_size)
 
-        num_threads = max(1, os.cpu_count() - 1)
+        # num_threads = max(1, os.cpu_count() - 1)
 
         final_result_df = pd.DataFrame()
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
-            # Submit processing tasks for each chunk
-            futures = [executor.submit(process_chunk, chunk, live_http) for chunk in chunks]
-
-            # Wait for all tasks to complete
-            concurrent.futures.wait(futures)
-
-            # Get results from completed tasks
-            for future in concurrent.futures.as_completed(futures):
-                result_df = future.result()
-                final_result_df = pd.concat([final_result_df, result_df], ignore_index=True)
+        # with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+        #     # Submit processing tasks for each chunk
+        #     futures = [executor.submit(process_chunk, chunk, live_http) for chunk in chunks]
+        #
+        #     # Wait for all tasks to complete
+        #     concurrent.futures.wait(futures)
+        #
+        #     # Get results from completed tasks
+        #     for future in concurrent.futures.as_completed(futures):
+        #         result_df = future.result()
+        #         final_result_df = pd.concat([final_result_df, result_df], ignore_index=True)
 
         # TODO:: only keep old method to rollback easier
-        # for chunk in chunks:
-        #     result_df = asyncio.run(live_http.live_http(chunk))
-        #     final_result_df = pd.concat([final_result_df, result_df], ignore_index=True)
+        for chunk in chunks:
+            result_df = asyncio.run(live_http.live_http(chunk))
+            final_result_df = pd.concat([final_result_df, result_df], ignore_index=True)
 
         final_result_df.to_csv(os.path.join(self.data_folder, f'{get_today_string()}_live.csv'), index=False)
 
